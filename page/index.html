@@ -1,0 +1,156 @@
+<!--main page html File -->
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta charset="utf-8" />
+		<title>NodeJs</title>
+		<style>
+			/*style.css file*/
+			body
+			{
+				font-family: 'lato',sans-serif;
+				font-size: 1.6em;
+				background-color: rgb(255,255,255);
+			}
+			div
+			{
+				background-color: rgb(0,0,0);
+				color: #fff;
+				margin: 24px auto;
+				padding: 24px;
+				opacity: 0.8;
+				width: 500px;
+				text-align: center;
+			}
+			input
+			{
+				width: 60%;
+			}
+			label
+			{
+				display: inline-block;
+				text-align: center;
+				width: 20%;
+			}
+			span
+			{
+				display: inline-block;
+				width: 10%;
+			}
+
+			#color
+			{
+				border-style: solid;
+				border-width: medium;
+				border-color: #fff;
+				display: inline-block;
+				width: 70px;
+				height: 30px;
+			}
+		</style>
+	</head>
+	<body>
+		<div>
+			<label>Red : </label>
+			<input id="red" type="range" min = "0"  max = "255" value = "0" onchange="changer();"/>
+			<span id="redValue">000</span>
+			<br/>
+			
+			<label>green : </label>
+			<input id="green" type="range" min = "0"  max = "255" value = "0" onchange="changeg();"/>
+			<span id="greenValue">000</span>
+			<br/>
+			
+			<label>blue : </label>
+			<input id="blue" type="range" min = "0"  max = "255" value = "0" onchange="changeb();"/>
+			<span id="blueValue">000</span>
+			<br/>
+			
+			<br/>
+			<label style="width: 50%;">Color Resulting :</label><label id="color"></label>
+		</div>
+				<script>
+			//script.js File
+			
+			//var host = "ws://localhost";
+			var host = location.origin.replace(/^http/,"ws");
+			var ws = new WebSocket(host); //#A
+			
+			//objects that used to change color
+			const r = document.getElementById('red');
+			const g = document.getElementById('green');
+			const b = document.getElementById('blue');
+			const col = document.getElementById('color');
+			
+			let color = 
+			{
+				red: 0, 
+				green: 0, 
+				blue: 0
+			};
+			
+			function changer()
+			{
+				if(ws && ws.readyState == 1){
+					ws.send('r' + r.value);
+				}else{
+					alert("Server is down");
+				}
+			};
+			function changeg()
+			{
+				if(ws && ws.readyState == 1){
+					ws.send('g' + g.value);
+				}else{
+					alert("Server is down");
+				}
+			};
+			function changeb()
+			{
+				if(ws && ws.readyState == 1){
+					ws.send('b' + b.value);
+				}else{
+					alert("Server is down");
+				}
+			};
+			
+			ws.onopen = function(){
+				console.log("condensed to Server");
+				ws.send('Hello Server');
+			};
+			
+			ws.onmessage = function(event){
+				console.log(event.data);
+				var msg = event.data.substring(1);
+				var p = event.data.charAt(0);
+				if(p == 'r'){
+					r.value = msg;
+					color["red"] = r.value;
+					document.getElementById('redValue').innerHTML = msg; 
+				}else if(p == 'g'){
+					g.value = msg;
+					color["green"] = g.value;
+					document.getElementById('greenValue').innerHTML = msg;
+				}else if(p == 'b'){
+					b.value = msg;
+					color["blue"] = b.value;
+					document.getElementById('blueValue').innerHTML = msg;
+				}else{
+					alert(event.data); //alert user if there is another data
+				}
+				
+				col.style.backgroundColor = "rgb(" + color["red"] + "," + color["green"] + "," + color["blue"] + ")";
+				
+			};
+			
+			ws.onclose = function(){
+				alert("Server is disconnected");
+			};
+			
+			ws.onerror = function(){
+				alert("There is an error");
+			};
+		</script>
+	</body>
+</html>
