@@ -25,8 +25,10 @@ void websocketEvent(WStype_t type, uint8_t *data, size_t length) {
     break;
   case (WStype_TEXT):
     int value = 0;
-    for (byte i = 1; i < length; i++) {
-        value += (data[i] - '0') * pow(10, (length - 1) - (i));
+    if (data[0] == 'r' || data[0] == 'g' || data[0] == 'b') {
+        for (byte i = 1; i < length; i++) {
+          value += (data[i] - '0') * pow(10, (length - 1) - (i));
+        }
     }
     value = map(value, 0, 255, 0, 1023);
     Serial.printf("%c fade: %d\n", data[0], value);
@@ -34,7 +36,7 @@ void websocketEvent(WStype_t type, uint8_t *data, size_t length) {
       analogWrite(redPin, value);
     } else if (data[0] == 'g') {
       analogWrite(greenPin, value);
-    } else {
+    } else if ('b') {
       analogWrite(bluePin, value);
     }
     break;
