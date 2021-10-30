@@ -26,18 +26,18 @@ void websocketEvent(WStype_t type, uint8_t *data, size_t length) {
   case (WStype_TEXT):
     int value = 0;
     if (data[0] == 'r' || data[0] == 'g' || data[0] == 'b') {
-        for (byte i = 1; i < length; i++) {
-          value += (data[i] - '0') * pow(10, (length - 1) - (i));
-        }
-    }
-    value = map(value, 0, 255, 0, 1023);
-    Serial.printf("%c fade: %d\n", data[0], value);
-    if (data[0] == 'r') {
-      analogWrite(redPin, value);
-    } else if (data[0] == 'g') {
-      analogWrite(greenPin, value);
-    } else if ('b') {
-      analogWrite(bluePin, value);
+      for (byte i = 1; i < length; i++) {
+        value += (data[i] - '0') * pow(10, (length - 1) - (i));
+      }
+      value = map(value, 0, 255, 0, 1023);
+      Serial.printf("%c fade: %d\n", data[0], value);
+      if (data[0] == 'r') {
+        analogWrite(redPin, value);
+      } else if (data[0] == 'g') {
+        analogWrite(greenPin, value);
+      } else if ('b') {
+        analogWrite(bluePin, value);
+      }
     }
     break;
   }
